@@ -1,0 +1,4 @@
+# 只用于本地开发和 CI
+-r requirements.txt
+pytest>=8.0
+

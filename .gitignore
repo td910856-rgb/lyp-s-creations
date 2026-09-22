@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 密钥与本地数据（绝对不要提交）
+backend/.env
+backend/resume.db
+backend/uploads/
+backend/tests/__pycache__/
+
+# Docker 部署时的数据卷
+data/
+.pytest_cache/
+
+# 前端
+frontend/node_modules/
+frontend/dist/
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

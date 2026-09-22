@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - backend/.env
+    environment:
+      # 数据放挂载卷里，容器重建不会丢
+      DATABASE_URL: sqlite:////data/resume.db
+      UPLOAD_DIR: /data/uploads
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+

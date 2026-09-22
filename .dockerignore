@@ -1,0 +1,13 @@
+.git
+.venv
+**/.venv
+node_modules
+**/node_modules
+frontend/dist
+backend/uploads
+backend/resume.db
+backend/.env
+data
+__pycache__
+**/__pycache__
+
