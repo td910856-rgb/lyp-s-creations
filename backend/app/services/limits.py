@@ -23,16 +23,18 @@ def _today() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
 
-def check(ip: str, use_own_key: bool = False) -> tuple[bool, str]:
+def check(ip: str, use_own_key: bool = False, count_quota: bool = True) -> tuple[bool, str]:
     """检查并记一次数。
 
     返回 (是否放行, 拒绝时给用户看的话)。
     use_own_key=True（访客自带密钥）时不占服务器的每日额度，但依然受每分钟限制。
+    count_quota=False 用于上传这类动作：只受每分钟限制，不吃每日分析额度。
     """
     if not settings.rate_limit_enabled:
         return True, ""
 
     now = time.time()
+    counted = not use_own_key and count_quota
     with _lock:
         today = _today()
         if _state["day"] != today:
@@ -53,7 +55,7 @@ def check(ip: str, use_own_key: bool = False) -> tuple[bool, str]:
                 "请等一分钟再试。"
             )
 
-        if not use_own_key:
+        if counted:
             used = int(per_ip.get(ip, 0))
             if used >= settings.rate_limit_per_day:
                 return False, (
@@ -65,7 +67,7 @@ def check(ip: str, use_own_key: bool = False) -> tuple[bool, str]:
 
         recent.append(now)
         minute[ip] = recent
-        if not use_own_key:
+        if counted:
             per_ip[ip] = int(per_ip.get(ip, 0)) + 1
             _state["global"] = int(_state["global"]) + 1
 
@@ -79,4 +81,3 @@ def remaining(ip: str, use_own_key: bool = False) -> int | None:
     with _lock:
         used = int(_state["per_ip"].get(ip, 0))  # type: ignore[union-attr]
     return max(0, settings.rate_limit_per_day - used)
-

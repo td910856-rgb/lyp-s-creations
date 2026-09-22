@@ -46,7 +46,8 @@ async def upload_resume(
 ) -> dict:
     # 上传也要限流：不然有人会拿它当免费文件存储
     client_ip = request.client.host if request and request.client else "unknown"
-    allowed, message = limits.check(client_ip)
+    # 上传只受每分钟限制，不消耗"每日分析次数"
+    allowed, message = limits.check(client_ip, count_quota=False)
     if not allowed:
         raise HTTPException(status_code=429, detail=message)
 
