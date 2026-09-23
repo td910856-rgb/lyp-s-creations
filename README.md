@@ -1,5 +1,8 @@
 # AI 简历优化器（Web MVP）
 
+[![CI](https://github.com/td910856-rgb/lyp-s-creations/actions/workflows/ci.yml/badge.svg)](https://github.com/td910856-rgb/lyp-s-creations/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 上传一份 PDF / Word 简历，输入目标岗位，得到：
 
 - 总体匹配度、技能匹配度、项目匹配度（三个分数）
@@ -18,6 +21,8 @@
 ## 用 Docker 一条命令跑起来
 
 ```bash
+git clone https://github.com/td910856-rgb/lyp-s-creations.git
+cd lyp-s-creations
 cp backend/.env.example backend/.env   # 然后按需修改
 docker compose up --build
 ```
