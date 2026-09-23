@@ -26,15 +26,18 @@ def _today() -> str:
 def client_ip(request) -> str:
     """取访客的真实 IP。
 
-    部署在 Render 这类反向代理后面时，request.client.host 拿到的是代理的地址，
-    而且可能每次都不一样——按它限流等于没限流。
-    真实 IP 在代理追加的 X-Forwarded-For 里，取最后一段最稳妥
-    （前面的可能是访客自己伪造的）。
+    线上实测：Render 前面还有 Cloudflare，后端收到的头长这样：
+
+        110.65.147.194, 162.158.108.39, 10.24.101.1
+        真实访客 IP     Cloudflare 节点    Render 内网地址
+
+    所以真实地址在【第一段】。注意这是一段可以被客户端伪造的字符串，
+    所以按 IP 的额度只算"防手滑"，真正的兜底是全站每日总量（global 计数）。
     """
     forwarded = request.headers.get("x-forwarded-for") or ""
     parts = [part.strip() for part in forwarded.split(",") if part.strip()]
     if parts:
-        return parts[-1]
+        return parts[0]
     client = getattr(request, "client", None)
     return client.host if client else "unknown"
 

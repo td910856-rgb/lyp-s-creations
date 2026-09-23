@@ -92,9 +92,6 @@ def health(request: Request) -> dict:
         "quota": {"remaining": limits.remaining(limits.client_ip(request))},
         # 诊断用：调用者看到的自己 IP，以及线上跑的是哪个提交
         "client_ip": limits.client_ip(request),
-        # 临时诊断：看看反向代理到底传了什么
-        "x_forwarded_for": request.headers.get("x-forwarded-for", ""),
-        "x_real_ip": request.headers.get("x-real-ip", ""),
         "build": settings.build_commit,
         "database": db_status,
     }

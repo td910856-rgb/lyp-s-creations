@@ -23,10 +23,12 @@ class _FakeRequest:
 
 
 def test_client_ip_behind_proxy():
-    """部署在代理后面时，要取 X-Forwarded-For 里的真实 IP。"""
-    # Render 这类代理会追加真实 IP，取最后一段
-    assert limits.client_ip(_FakeRequest({"x-forwarded-for": "1.2.3.4, 5.6.7.8"})) == "5.6.7.8"
-    # 单个直接值
+    """线上实测的代理链路：真实 IP 在第一段。"""
+    assert (
+        limits.client_ip(_FakeRequest({"x-forwarded-for": "110.65.147.194, 162.158.108.39, 10.24.101.1"}))
+        == "110.65.147.194"
+    )
+    # 只有一段的情况
     assert limits.client_ip(_FakeRequest({"x-forwarded-for": "9.9.9.9"})) == "9.9.9.9"
     # 没有这个头就退回直连地址
     assert limits.client_ip(_FakeRequest({}, host="127.0.0.1")) == "127.0.0.1"
