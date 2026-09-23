@@ -53,6 +53,14 @@ class Settings:
         self.llm_base_url: str = _env("LLM_BASE_URL", "https://api.openai.com/v1")
         self.llm_model: str = _env("LLM_MODEL", "gpt-4o-mini")
         self.llm_timeout: float = _env_float("LLM_TIMEOUT", 120.0)
+        # DeepSeek 的新模型默认开"思考模式"，会先输出一大段推理（输出 token 照样计费）。
+        # 改简历是结构化任务，关掉它更快更省；其它服务商不受这个开关影响。
+        self.llm_disable_thinking: bool = _env("LLM_DISABLE_THINKING", "1").lower() in {
+            "1",
+            "true",
+            "yes",
+            "on",
+        }
 
         # 演示模式：不用密钥、不花钱，也能跑通完整流程
         self.llm_mock: bool = _env("LLM_MOCK", "0").lower() in {"1", "true", "yes", "on"}

@@ -81,7 +81,7 @@ npm run dev
 ```ini
 LLM_API_KEY=你的密钥
 LLM_BASE_URL=https://api.deepseek.com/v1
-LLM_MODEL=deepseek-chat
+LLM_MODEL=deepseek-flash
 LLM_MOCK=0
 ```
 
@@ -90,10 +90,15 @@ LLM_MOCK=0
 | 服务商 | LLM_BASE_URL | LLM_MODEL 示例 |
 |---|---|---|
 | OpenRouter（有免费模型） | `https://openrouter.ai/api/v1` | `qwen/qwen3.8-27b:free` |
-| DeepSeek | `https://api.deepseek.com/v1` | `deepseek-chat` |
+| DeepSeek | `https://api.deepseek.com/v1` | `deepseek-flash` |
 | 通义千问 | `https://dashscope.aliyuncs.com/compatible-mode/v1` | `qwen-plus` |
 | OpenAI | `https://api.openai.com/v1` | `gpt-4o-mini` |
 | 本地 Ollama（不联网） | `http://127.0.0.1:11434/v1` | `qwen2.5:7b` |
+
+关于 DeepSeek：模型名现在是 `deepseek-flash`（主力，便宜快）和 `deepseek-v4-pro`（更强，贵约 4 倍），
+旧名字 `deepseek-chat` 已经停用。另外它的新模型**默认开启"思考模式"**，会先输出一大段推理，
+而那部分输出 token 同样计费。本项目在用 DeepSeek 官方接口时会自动关掉它
+（`.env` 里的 `LLM_DISABLE_THINKING=1`），其它服务商不受影响。
 
 免费的怎么选：
 

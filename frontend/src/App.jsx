@@ -405,7 +405,7 @@ export default function App() {
                     id="llm-model"
                     className="input"
                     value={llm.model}
-                    placeholder="deepseek-chat"
+                    placeholder="deepseek-flash"
                     onChange={(event) => handleLlmChange('model', event.target.value)}
                   />
                 </div>

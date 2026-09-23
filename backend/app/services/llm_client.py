@@ -85,6 +85,30 @@ def _resolve_credentials(override: dict[str, str] | None) -> tuple[str, str, str
     return api_key, base_url, model
 
 
+def _build_payload(
+    messages: list[dict[str, str]],
+    model: str,
+    base_url: str,
+) -> dict[str, Any]:
+    """拼请求体。
+
+    只做一件「看服务商决定」的事：用 DeepSeek 官方接口时关掉思考模式。
+    它的新模型默认开思考，会先吐一大段推理内容——既慢，那部分输出 token 也照样计费。
+    其它服务商不塞这个字段（免得对方因为不认识这个参数而报错）。
+    """
+    payload: dict[str, Any] = {
+        "model": model,
+        "messages": messages,
+        # 低温度让输出更稳定，改简历这类任务不需要发挥
+        "temperature": 0.2,
+    }
+
+    if "api.deepseek.com" in base_url.lower() and settings.llm_disable_thinking:
+        payload["thinking"] = {"type": "disabled"}
+
+    return payload
+
+
 def _call_model(
     messages: list[dict[str, str]],
     api_key: str,
@@ -100,11 +124,7 @@ def _call_model(
     """
     # 把地址拼成 https://xxx/v1/chat/completions
     url = base_url.rstrip("/") + "/chat/completions"
-    payload = {
-        "model": model,
-        "messages": messages,
-        "temperature": 0.2,  # 低温度让输出更稳定，改简历这类任务不需要发挥
-    }
+    payload = _build_payload(messages, model, base_url)
 
     request = urllib.request.Request(
         url,

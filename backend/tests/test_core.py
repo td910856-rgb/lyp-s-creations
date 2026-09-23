@@ -11,7 +11,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from app.services import analyzer, exporter, file_parser, limits  # noqa: E402
+from app.services import analyzer, exporter, file_parser, limits, llm_client  # noqa: E402
 
 
 class _FakeRequest:
@@ -32,6 +32,19 @@ def test_client_ip_behind_proxy():
     assert limits.client_ip(_FakeRequest({"x-forwarded-for": "9.9.9.9"})) == "9.9.9.9"
     # 没有这个头就退回直连地址
     assert limits.client_ip(_FakeRequest({}, host="127.0.0.1")) == "127.0.0.1"
+
+
+def test_deepseek_disables_thinking_by_default():
+    """DeepSeek 默认开思考模式，我们的请求体里应该把它关掉。"""
+    messages = [{"role": "user", "content": "hi"}]
+
+    payload = llm_client._build_payload(messages, "deepseek-flash", "https://api.deepseek.com/v1")
+    assert payload["thinking"] == {"type": "disabled"}
+    assert payload["model"] == "deepseek-flash"
+
+    # 其它服务商不能被塞这个字段，否则可能因为不认识而报参数错误
+    other = llm_client._build_payload(messages, "gpt-4o-mini", "https://api.openai.com/v1")
+    assert "thinking" not in other
 
 
 def test_score_normalization():
