@@ -3,6 +3,9 @@
 [![CI](https://github.com/td910856-rgb/lyp-s-creations/actions/workflows/ci.yml/badge.svg)](https://github.com/td910856-rgb/lyp-s-creations/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+> **在线体验**：<https://ai-resume-optimizer-ocde.onrender.com>
+> （免费实例，第一次打开要等十几秒唤醒；站点不提供模型密钥，使用前需在页面里填自己的 API Key）
+
 上传一份 PDF / Word 简历，输入目标岗位，得到：
 
 - 总体匹配度、技能匹配度、项目匹配度（三个分数）
