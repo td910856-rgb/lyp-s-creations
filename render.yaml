@@ -1,0 +1,38 @@
+# Render 部署配置（Blueprint）。
+# 用法：Render → New → Blueprint → 选这个仓库 → Apply，剩下的它会自动配好。
+# 免费实例不支持持久磁盘，所以数据是临时的：反正有 72 小时自动清理，
+# 真要长期保留数据，把 plan 换成付费实例并打开下面的 disk 配置。
+services:
+  - type: web
+    name: ai-resume-optimizer
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: LLM_MOCK
+        value: "0"
+      # 服务器不垫付模型费用：访客用自己的密钥
+      - key: REQUIRE_OWN_KEY
+        value: "1"
+      - key: DATA_RETENTION_HOURS
+        value: "72"
+      - key: RATE_LIMIT_PER_DAY
+        value: "10"
+      - key: RATE_LIMIT_PER_MINUTE
+        value: "3"
+      - key: RATE_LIMIT_GLOBAL_PER_DAY
+        value: "500"
+      - key: WEB_SEARCH_ENABLED
+        value: "1"
+      - key: DATABASE_URL
+        value: sqlite:////data/resume.db
+      - key: UPLOAD_DIR
+        value: /data/uploads
+    # 付费实例上想保留历史数据，取消下面几行注释即可
+    # disk:
+    #   name: data
+    #   mountPath: /data
+    #   sizeGB: 1
+

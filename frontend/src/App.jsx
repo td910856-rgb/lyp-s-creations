@@ -446,6 +446,13 @@ export default function App() {
           </aside>
 
           <main className="content" id="result-anchor">
+            {health?.privacy?.require_own_key && !llm.apiKey && (
+              <div className="banner banner-info">
+                这个站点<strong>不提供模型密钥</strong>。开始分析前，请在左侧「设置与隐私 → 模型设置」
+                里填上你自己的 API Key（DeepSeek、通义千问、OpenRouter 都可以，密钥只存在你浏览器里）。
+              </div>
+            )}
+
             {error && (
               <div className="banner banner-error">
                 <strong>出错了：</strong>

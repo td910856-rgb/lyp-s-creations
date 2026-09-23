@@ -36,6 +36,19 @@ docker compose up --build
 
 ## 三、部署到 Render（免费，推荐先这样上线）
 
+### 最省事的走法：用 Blueprint
+
+仓库根目录里有 `render.yaml`，Render 能直接读它建服务：
+
+1. 打开 <https://dashboard.render.com/blueprints>
+2. 点 **New Blueprint Instance**
+3. 选 `lyp-s-creations` 这个仓库，点 **Apply**
+4. 等两三分钟构建完成，就能拿到 `https://xxx.onrender.com`
+
+环境变量、健康检查路径、Docker 配置都写在 `render.yaml` 里了，不用手填。
+
+### 手动建服务（想自己控制每个选项时用）
+
 1. 把代码推到 GitHub（见 README 的「开源到 GitHub」一节）
 2. 打开 <https://render.com>，用 GitHub 账号登录
 3. New → **Web Service** → 选择你的仓库
@@ -96,4 +109,3 @@ docker compose up --build
 | 分析报错 | 平台的运行日志；BYOK 模式下多半是访客密钥填错 |
 | 数据没了 | 容器重建且没挂持久卷，属预期行为 |
 | 被人刷 | 调小 `RATE_LIMIT_PER_DAY` / `RATE_LIMIT_GLOBAL_PER_DAY` |
-
