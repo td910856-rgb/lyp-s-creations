@@ -133,5 +133,10 @@ class Settings:
             "require_own_key": self.require_own_key,
         }
 
+    @property
+    def build_commit(self) -> str:
+        """部署平台注入的提交号，用来确认线上跑的是哪个版本。"""
+        return _env("RENDER_GIT_COMMIT")[:7]
+
 
 settings = Settings()

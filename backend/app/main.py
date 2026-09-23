@@ -90,6 +90,9 @@ def health(request: Request) -> dict:
         "web": settings.safe_web_summary(),
         "privacy": settings.safe_privacy_summary(),
         "quota": {"remaining": limits.remaining(limits.client_ip(request))},
+        # 诊断用：调用者看到的自己 IP，以及线上跑的是哪个提交
+        "client_ip": limits.client_ip(request),
+        "build": settings.build_commit,
         "database": db_status,
     }
 
