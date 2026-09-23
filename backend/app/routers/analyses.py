@@ -62,8 +62,7 @@ def create_analysis(
             detail="本站不提供模型密钥，请在左侧的「模型设置」里填上你自己的 API Key。",
         )
 
-    client_ip = request.client.host if request.client else "unknown"
-    allowed, message = limits.check(client_ip, use_own_key=use_own_key)
+    allowed, message = limits.check(limits.client_ip(request), use_own_key=use_own_key)
     if not allowed:
         raise HTTPException(status_code=429, detail=message)
 

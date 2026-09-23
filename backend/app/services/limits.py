@@ -23,6 +23,22 @@ def _today() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
 
+def client_ip(request) -> str:
+    """取访客的真实 IP。
+
+    部署在 Render 这类反向代理后面时，request.client.host 拿到的是代理的地址，
+    而且可能每次都不一样——按它限流等于没限流。
+    真实 IP 在代理追加的 X-Forwarded-For 里，取最后一段最稳妥
+    （前面的可能是访客自己伪造的）。
+    """
+    forwarded = request.headers.get("x-forwarded-for") or ""
+    parts = [part.strip() for part in forwarded.split(",") if part.strip()]
+    if parts:
+        return parts[-1]
+    client = getattr(request, "client", None)
+    return client.host if client else "unknown"
+
+
 def check(ip: str, use_own_key: bool = False, count_quota: bool = True) -> tuple[bool, str]:
     """检查并记一次数。
 

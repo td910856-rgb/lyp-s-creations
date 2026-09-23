@@ -11,7 +11,25 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from app.services import analyzer, exporter, file_parser  # noqa: E402
+from app.services import analyzer, exporter, file_parser, limits  # noqa: E402
+
+
+class _FakeRequest:
+    """够用的假 Request，只为测试取 IP 的逻辑。"""
+
+    def __init__(self, headers=None, host="10.0.0.1"):
+        self.headers = headers or {}
+        self.client = type("C", (), {"host": host})() if host else None
+
+
+def test_client_ip_behind_proxy():
+    """部署在代理后面时，要取 X-Forwarded-For 里的真实 IP。"""
+    # Render 这类代理会追加真实 IP，取最后一段
+    assert limits.client_ip(_FakeRequest({"x-forwarded-for": "1.2.3.4, 5.6.7.8"})) == "5.6.7.8"
+    # 单个直接值
+    assert limits.client_ip(_FakeRequest({"x-forwarded-for": "9.9.9.9"})) == "9.9.9.9"
+    # 没有这个头就退回直连地址
+    assert limits.client_ip(_FakeRequest({}, host="127.0.0.1")) == "127.0.0.1"
 
 
 def test_score_normalization():
@@ -83,4 +101,3 @@ def test_extract_text_rejects_unknown_extension(tmp_path):
         assert ".docx" in str(exc)  # 提示用户另存为 docx
     else:  # pragma: no cover
         raise AssertionError("旧版 .doc 应该被拒绝")
-

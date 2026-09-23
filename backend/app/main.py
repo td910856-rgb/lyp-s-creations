@@ -83,15 +83,13 @@ def health(request: Request) -> dict:
     except Exception as exc:  # 数据库文件损坏等少见情况
         db_status = f"error: {exc}"
 
-    client_ip = request.client.host if request.client else "unknown"
-
     return {
         "status": "ok" if db_status == "ok" else "degraded",
         "llm_ready": settings.llm_ready,
         "llm": settings.safe_llm_summary(),
         "web": settings.safe_web_summary(),
         "privacy": settings.safe_privacy_summary(),
-        "quota": {"remaining": limits.remaining(client_ip)},
+        "quota": {"remaining": limits.remaining(limits.client_ip(request))},
         "database": db_status,
     }
 

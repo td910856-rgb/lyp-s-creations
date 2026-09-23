@@ -39,15 +39,14 @@ def resume_payload(resume: Resume) -> dict:
 
 @router.post("/upload", response_model=ResumeOut, summary="上传简历并提取文字")
 async def upload_resume(
+    request: Request,
     file: UploadFile = File(..., description="PDF / DOCX / TXT 简历"),
-    request: Request = None,  # type: ignore[assignment]
     x_client_id: str | None = Header(default=None),
     db: Session = Depends(get_db),
 ) -> dict:
     # 上传也要限流：不然有人会拿它当免费文件存储
-    client_ip = request.client.host if request and request.client else "unknown"
     # 上传只受每分钟限制，不消耗"每日分析次数"
-    allowed, message = limits.check(client_ip, count_quota=False)
+    allowed, message = limits.check(limits.client_ip(request), count_quota=False)
     if not allowed:
         raise HTTPException(status_code=429, detail=message)
 
